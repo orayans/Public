@@ -1,6 +1,7 @@
 
 
-#region  1 - Export HWID's Directly to Intune
+
+#region  1 - Export HWID's to Autopilot file
     $Computer = hostname ;
     Write-host "Generating Auot Pilot info " -ForegroundColor Green ;
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -9,8 +10,14 @@
     $env:Path += ";C:\Program Files\WindowsPowerShell\Scripts"
     Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
     Install-Script -Name Get-WindowsAutopilotInfo
-    Get-WindowsAutopilotInfo -online
-    
+    Get-WindowsAutopilotInfo -OutputFile AutopilotHWID__$Computer.csv ;
+    Copy-Item -Path C:\HWID\AutopilotHWID__$Computer.csv -Destination \\MEL-APPSCRIPT-01\HWID-Temp\
+    if(Test-Path -Path \\MEL-APPSCRIPT-01\HWID-Temp\AutopilotHWID__$Computer.csv){
+        Write-host "File successfully copied to script server " -ForegroundColor Green ;
+    }
+    else{
+        Write-host "File is not copied to script server. You may manually copy from C:\HWID\ " -ForegroundColor red ;
+    }
 #endregion
 
 
